@@ -1,0 +1,20 @@
+language: python
+jobs:
+  include:
+    - stage: lint
+      python: "3.8"
+      install:
+        - pip install -e .[dev]
+      script: pylama
+    - python: "3.8"
+      install:
+        - pip install -e .[dev]
+      script: mypy core_service --ignore-missing-imports
+    - stage: test
+      python: "3.8"
+      install:
+        - pip install -e .[dev]
+      after_success:
+        - bash <(curl -s https://codecov.io/bash)
+      script:
+        - pytest --cov-report=term-missing --cov core_service
