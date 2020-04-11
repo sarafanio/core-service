@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/sarafanio/core-service.svg?branch=master)](https://travis-ci.org/sarafanio/core-service)
 [![codecov](https://codecov.io/gh/sarafanio/core-service/branch/master/graph/badge.svg)](https://codecov.io/gh/sarafanio/core-service)
+[![Documentation Status](https://readthedocs.org/projects/core-service/badge/?version=latest)](https://core-service.readthedocs.io/en/latest/?badge=master)
 
 core-service
 ============
@@ -13,6 +14,29 @@ Features:
 * simple service orchestration
 * service-bound asyncio tasks management
 * 100% test coverage
+
+Quick example:
+
+```python
+from asyncio import run, sleep
+from core_service import Service, task
+
+class MyService(Service):
+    @task(workers=10)
+    async def my_heavy_task(self):
+        await sleep(1)
+        print("Heavy task performed")
+
+async def main():
+    service = MyService()
+    await service.start()
+    await sleep(10)
+    await service.stop()
+
+run(main())
+```
+
+[Read the docs](https://core-service.readthedocs.io/en/master/).
 
 You can support project development by staring it on github.
 
