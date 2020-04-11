@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/sarafanio/core-service.svg?branch=master)](https://travis-ci.org/sarafanio/core-service)
+[![Coverage](https://img.shields.io/codecov/c/github/sarafanio/core-service)](https://codecov.io/gh/sarafanio/core-service)
+
 core-service
 ============
 
