@@ -15,6 +15,12 @@ Features:
 * service-bound asyncio tasks management
 * 100% test coverage
 
+Install:
+
+```shell script
+pip install -U core-service
+```
+
 Quick example:
 
 ```python
