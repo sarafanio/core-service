@@ -24,6 +24,12 @@ class MainService(Service):
         ]
 
 
+class FailingRequirementsService(Service):
+    @requirements()
+    async def main_requirements(self):
+        raise Exception("EXPECTED_EXCEPTION")
+
+
 @pytest.mark.asyncio
 async def test_nested_service_lifecycle():
 
@@ -171,3 +177,12 @@ async def test_unresolvable_requirements():
     service = UnresolvableService()
     with pytest.raises(RuntimeError):
         await service.start()
+
+
+@pytest.mark.asyncio
+async def test_requirements_method_exception(caplog):
+    service = FailingRequirementsService()
+    with pytest.raises(Exception, match='EXPECTED_EXCEPTION'):
+        await service.start()
+    assert service.running is False
+    assert 'EXPECTED_EXCEPTION' in caplog.text

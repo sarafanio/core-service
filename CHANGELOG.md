@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* decrease service startup log level
+* add additional shutdown debug logs
+* fix output exception details on requirements method error
+
 ## [0.1.0] - 2020-04-11
 
 * Initial release

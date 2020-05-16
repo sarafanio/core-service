@@ -3,7 +3,7 @@ from typing import Optional
 
 from .abstract import AbstractService
 from .container import ServiceContainerMixin
-from .exceptions import ServiceStartupException, UnhealthyException
+from .exceptions import UnhealthyException
 from .tasks import TasksMixin
 
 
@@ -35,10 +35,12 @@ class Service(ServiceContainerMixin, TasksMixin, AbstractService):
         """
         self.log.debug("Starting")
         self.running = True
+        self.log.debug("Starting service tasks...")
         await self._start_service_tasks()
         try:
+            self.log.debug("Starting nested services...")
             await self._start_nested_services()
-        except (ServiceStartupException, TypeError):
+        except Exception:
             self.log.exception("Failed to start nested service")
             self.running = False
             self.should_stop = True

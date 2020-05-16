@@ -120,7 +120,11 @@ class ServiceContainerMixin(AbstractService, abc.ABC):
                                    loaded, requirements)
                     continue
                 self.log.debug("Getting requirements from %s", name)
-                services = await method()
+                try:
+                    services = await method()
+                except Exception:
+                    self.log.exception("Exception while receiving %s requirements", name)
+                    raise
                 self.log.debug("Requirements from %s: %s", method, services)
                 if not (services is None or isinstance(services, list)):
                     raise TypeError("Requirements method must return list or None. "
