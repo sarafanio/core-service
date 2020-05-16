@@ -46,7 +46,7 @@ class Service(ServiceContainerMixin, TasksMixin, AbstractService):
             raise
         self._monitoring_task = self.loop.create_task(self.monitoring_task(),
                                                       name=f"{self.name}.monitoring_task")
-        self.log.info("Service was started")
+        self.log.debug("Service was started")
 
     async def stop(self):
         """Stop service.
@@ -62,8 +62,11 @@ class Service(ServiceContainerMixin, TasksMixin, AbstractService):
         self.running = False
         if self._monitoring_task:
             self._monitoring_task.cancel()
+        self.log.debug("Stopping nested services...")
         await self._stop_nested_services()
+        self.log.debug("Stopping service tasks...")
         await self._stop_service_tasks()
+        self.log.debug("Service was stopped")
 
     async def monitoring_task(self):
         """Monitoring task.
