@@ -4,11 +4,11 @@ jobs:
     - stage: lint
       python: "3.8"
       install:
-        - pip install -e .[dev]
+        - pip install -U -e .[dev]
       script: pylama
     - python: "3.8"
       install:
-        - pip install -e .[dev]
+        - pip install -U -e .[dev]
       script: mypy core_service --ignore-missing-imports
     - stage: test
       python: "3.8"
