@@ -13,6 +13,7 @@ jobs:
     - stage: test
       python: "3.8"
       install:
+        - pip install -U pytest pytest-asyncio
         - pip install -U -e .[dev]
       after_success:
         - bash <(curl -s https://codecov.io/bash)
