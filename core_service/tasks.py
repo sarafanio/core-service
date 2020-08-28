@@ -42,6 +42,8 @@ class ServiceTask:
         """
         while not self.service.should_stop:
             await self.callable()
+            if self.periodic is False:
+                break
             await asyncio.sleep(self.sleep_interval)
 
 
