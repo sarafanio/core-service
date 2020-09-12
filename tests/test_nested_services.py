@@ -186,3 +186,30 @@ async def test_requirements_method_exception(caplog):
         await service.start()
     assert service.running is False
     assert 'EXPECTED_EXCEPTION' in caplog.text
+
+
+@pytest.mark.asyncio
+async def test_failing_nested_service(caplog):
+    """Test nested service failed.
+
+    """
+    class FailingService(Service):
+        @task()
+        async def failing_task(self):
+            raise Exception('EXPECTED_EXCEPTION')
+
+    class Main(Service):
+        nested = None
+
+        @requirements()
+        async def reqs(self):
+            self.nested = FailingService()
+            return [self.nested]
+
+    service = Main()
+    await service.start()
+    await asyncio.sleep(0)
+    assert service.nested.running is False, "Nested service is not stopped"
+    assert service.running is False, "Main service should stop after nested service failure"
+    assert 'EXPECTED_EXCEPTION' in caplog.text
+    await service.stop()

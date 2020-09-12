@@ -132,6 +132,7 @@ class ServiceContainerMixin(AbstractService, abc.ABC):
                                     services, type(services))
                 if services:
                     for service in services:
+                        self.nested_service_pre_start(service)
                         self._services.add(service)
                 ordering_required.remove(name)
                 ordered_count += 1
@@ -149,3 +150,6 @@ class ServiceContainerMixin(AbstractService, abc.ABC):
         """Stop nested services in reverse order.
         """
         await self._services.stop_all()
+
+    def nested_service_pre_start(self, service: AbstractService) -> AbstractService:  # pragma: no cover
+        return service

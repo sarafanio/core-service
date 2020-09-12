@@ -1,7 +1,8 @@
+import functools
 from typing import List
 
 
-def requirements(*deps: List[str]):
+def requirements(*deps: str):
     """Decorator marking service method as a source of nested services list.
 
     Marked method should return a list of service instances that should be instantiated.
@@ -44,4 +45,13 @@ def task(periodic: bool = True, sleep_interval: float = .1, workers: int = 1):
         }
         return f
 
+    return wrapper
+
+
+def listener(*obj_types):
+    """Decorator defining service-bus listener for a specified object types.
+    """
+    def wrapper(f):
+        f.bus_handler_types = obj_types
+        return f
     return wrapper

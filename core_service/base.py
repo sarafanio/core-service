@@ -5,9 +5,10 @@ from .abstract import AbstractService
 from .container import ServiceContainerMixin
 from .exceptions import UnhealthyException
 from .tasks import TasksMixin
+from .bus import ServiceBusMixin, ServiceBus
 
 
-class Service(ServiceContainerMixin, TasksMixin, AbstractService):
+class Service(ServiceBusMixin, ServiceContainerMixin, TasksMixin, AbstractService):
     """Base service class.
 
     Your services should be inherited from this class.
@@ -19,10 +20,11 @@ class Service(ServiceContainerMixin, TasksMixin, AbstractService):
     #: interval in seconds to sleep between healthcheck runs
     _monitoring_interval: float = .1
 
-    def __init__(self, *, loop=None, monitoring_interval: float = .1):
+    def __init__(self, *, loop=None, bus: ServiceBus = None, monitoring_interval: float = .1):
         self._loop = loop
         self._monitoring_interval = monitoring_interval
         super().__init__()
+        self.set_service_bus(bus)
 
     async def start(self):
         """Start service.
@@ -48,6 +50,7 @@ class Service(ServiceContainerMixin, TasksMixin, AbstractService):
             raise
         self._monitoring_task = self.loop.create_task(self.monitoring_task(),
                                                       name=f"{self.name}.monitoring_task")
+        await self.start_bus_reader()
         self.log.debug("Service was started")
 
     async def stop(self):
@@ -62,6 +65,7 @@ class Service(ServiceContainerMixin, TasksMixin, AbstractService):
         """
         self.should_stop = True
         self.running = False
+        await self.stop_bus_reader()
         if self._monitoring_task:
             self._monitoring_task.cancel()
         self.log.debug("Stopping nested services...")
@@ -89,3 +93,7 @@ class Service(ServiceContainerMixin, TasksMixin, AbstractService):
         # terminate service on exit
         if not self.should_stop:
             await self.stop()
+
+    def nested_service_pre_start(self, service: ServiceBusMixin):
+        service.set_service_bus(self.bus)
+        return service
